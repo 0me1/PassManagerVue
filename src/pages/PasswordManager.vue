@@ -4,7 +4,6 @@ import { useRouter } from 'vue-router'
 import SearchBar from './components/SearchBar.vue'
 import PasswordCard from './components/PasswordCard.vue'
 
-
 const router = useRouter()
 
 const passwords = ref([
@@ -28,12 +27,129 @@ const passwords = ref([
         email: 'user@example.com',
         password: 'Netflix789*',
         url: 'netflix.com'
+    },
+    {
+        id: 4,
+        website: 'YouTube',
+        email: 'creator_studio@gmail.com',
+        password: 'VlogMaster2026$',
+        url: 'youtube.com'
+    },
+    {
+        id: 5,
+        website: 'LinkedIn',
+        email: 'hr_manager@linkedin.com',
+        password: 'CareerGrowth88!',
+        url: 'linkedin.com'
+    },
+    {
+        id: 6,
+        website: 'Yandex',
+        email: 'alex.ivanov@yandex.ru',
+        password: 'YaSecretKey_99',
+        url: 'yandex.ru'
+    },
+    {
+        id: 7,
+        website: 'Spotify',
+        email: 'music_lover@outlook.com',
+        password: 'RockMelody2025%',
+        url: 'spotify.com'
+    },
+    {
+        id: 8,
+        website: 'Figma',
+        email: 'designer_pro@figma.com',
+        password: 'PixelPerfect432^',
+        url: 'figma.com'
+    },
+    {
+        id: 9,
+        website: 'Notion',
+        email: 'workspace_guru@notion.so',
+        password: 'NoteOrganized77&',
+        url: 'notion.so'
+    },
+    {
+        id: 10,
+        website: 'Telegram',
+        email: '+12345678901',
+        password: 'TgCloudStorage_5',
+        url: 'web.telegram.org'
+    },
+    {
+        id: 11,
+        website: 'Amazon',
+        email: 'shop_buyer@amazon.com',
+        password: 'PrimeDelivery12#',
+        url: 'amazon.com'
+    },
+    {
+        id: 12,
+        website: 'Discord',
+        email: 'gamer_pro@discord.gg',
+        password: 'VoiceChatActive!8',
+        url: 'discord.com'
+    },
+    {
+        id: 13,
+        website: 'Habr',
+        email: 'senior_dev@habr.ru',
+        password: 'CodeReviewer_2026',
+        url: 'habr.com'
+    },
+    {
+        id: 14,
+        website: 'GitLab',
+        email: 'devops_eng@gitlab.com',
+        password: 'CiCdPipeline_987',
+        url: 'gitlab.com'
+    },
+    {
+        id: 15,
+        website: 'Reddit',
+        email: 'karma_collector@reddit.com',
+        password: 'UpvoteDownvote32',
+        url: 'reddit.com'
+    },
+    {
+        id: 16,
+        website: 'Pinterest',
+        email: 'moodboard_art@pinterest.com',
+        password: 'InspirationPin65',
+        url: 'pinterest.com'
+    },
+    {
+        id: 17,
+        website: 'Steam',
+        email: 'achievements_hunter',
+        password: 'SummerSale2026$',
+        url: 'store.steampowered.com'
+    },
+    {
+        id: 18,
+        website: 'VK',
+        email: '+79998887766',
+        password: 'VkCommunityAdmin_0',
+        url: 'vk.com'
+    },
+    {
+        id: 19,
+        website: 'Zoom',
+        email: 'remote_worker@zoom.us',
+        password: 'DailyStandup_44!',
+        url: 'zoom.us'
+    },
+    {
+        id: 20,
+        website: 'Stack Overflow',
+        email: 'copy_paste_master@so.com',
+        password: 'SolvedByAnswer_11',
+        url: 'stackoverflow.com'
     }
 ])
 
 const searchQuery = ref('')
-const visiblePasswords = ref({})
-const copiedId = ref(null)
 const isLoading = ref(false)
 
 const filteredPasswords = computed(() => {
@@ -45,28 +161,6 @@ const filteredPasswords = computed(() => {
 
 const deletePassword = (id) => {
     passwords.value = passwords.value.filter(item => item.id !== id)
-}
-
-// 🔥 ЗАГРУЗКА ИЗ ПУБЛИЧНОГО ФАЙЛА
-const loadPasswordsFromFile = async () => {
-    isLoading.value = true
-    try {
-        const response = await fetch('/passwords.json')
-        if (!response.ok) {
-            throw new Error('Файл не найден. Поместите passwords.json в папку public')
-        }
-        const data = await response.json()
-        if (!Array.isArray(data)) {
-            throw new Error('Неверный формат файла')
-        }
-        passwords.value = data
-        alert('✓ Пароли успешно загружены!')
-    } catch (error) {
-        alert('✗ Ошибка загрузки: ' + error.message)
-        console.error('Ошибка:', error)
-    } finally {
-        isLoading.value = false
-    }
 }
 
 // ЗАГРУЗКА ИЗ ФАЙЛА НА КОМПЬЮТЕРЕ
@@ -116,23 +210,6 @@ const loadPasswordsFromAPI = async () => {
     }
 }
 
-// ДОБАВЛЕНИЕ НОВОГО ПАРОЛЯ
-const addPassword = () => {
-    const newPassword = prompt('Введите новый пароль в формате JSON:\n{"website":"...","email":"...","password":"...","url":"..."}')
-    if (!newPassword) return
-    
-    try {
-        const data = JSON.parse(newPassword)
-        const newId = Math.max(...passwords.value.map(p => p.id), 0) + 1
-        passwords.value.push({
-            id: newId,
-            ...data
-        })
-        alert('✓ Пароль добавлен!')
-    } catch {
-        alert('✗ Неверный формат JSON')
-    }
-}
 
 // ЭКСПОРТ ПАРОЛЕЙ В JSON
 const exportPasswords = (data = passwords.value, fileName = null) => {
@@ -217,9 +294,21 @@ const handleKeyPress = (event) => {
 <template>
     <div class="password-manager">
         <!-- Кнопка назад -->
-        <button @click="router.push('/')" class="back-btn">← Назад</button>
-        
-        <div class="load-panel">
+         <div class="upper-panel">
+
+             <button @click="router.push('/')" class="back-btn">← Назад</button>
+     
+             <button 
+                 @click="openAddPasswordModal"
+                 :disabled="isLoading"
+                 class="load-btn add-btn"
+             >
+                 ➕ Добавить
+             </button>
+
+         </div>
+
+        <!-- <div class="load-panel">
         <button 
             @click="openAddPasswordModal"
             :disabled="isLoading"
@@ -274,7 +363,8 @@ const handleKeyPress = (event) => {
             >
                 📊 Экспортировать поиск
             </button>
-        </div>
+        </div> -->
+
 
 
         <!-- Поиск -->
@@ -367,8 +457,13 @@ const handleKeyPress = (event) => {
     box-sizing: border-box;
 }
 
+.upper-panel {
+    display: flex;
+    justify-content: space-between;
+}
+
 .password-manager {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
@@ -457,12 +552,19 @@ const handleKeyPress = (event) => {
 }
 
 .add-btn {
-    background: linear-gradient(135deg, #52C41A, #45AA0A);
-    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+    background: #82d35a;
+    border: 1px solid #55f008;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: all 0.2s;
 }
 
 .add-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #6FD13C, #52C41A);
+    background: #82d35a;
     box-shadow: 0 6px 16px rgba(82, 196, 26, 0.4);
 }
 
