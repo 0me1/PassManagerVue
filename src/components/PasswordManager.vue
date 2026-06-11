@@ -183,22 +183,23 @@ const exportCurrentPasswords = () => {
     <div class="password-manager">
         <!-- Кнопка назад -->
         <button @click="router.push('/')" class="back-btn">← Назад</button>
-
-        <div class="header">
-            <h1>🔐 Пароли</h1>
-            <p class="subtitle">{{ filteredPasswords.length }} из {{ passwords.length }} паролей</p>
-        </div>
-
-        <!-- Панель загрузки -->
-        <!-- Панель загрузки -->
+        
         <div class="load-panel">
             <button 
-                @click="loadPasswordsFromFile" 
+                @click="addPassword"
                 :disabled="isLoading"
-                class="load-btn"
+                class="load-btn add-btn"
             >
-                {{ isLoading ? '⏳ Загрузка...' : '📥 Из файла' }}
+                ➕ Добавить
             </button>
+
+            <button 
+            @click="loadPasswordsFromFile" 
+            :disabled="isLoading"
+            class="load-btn"
+            >
+            {{ isLoading ? '⏳ Загрузка...' : '📥 Из файла' }}
+        </button>
             
             <label class="file-input-label">
                 <input 
@@ -219,13 +220,6 @@ const exportCurrentPasswords = () => {
                 {{ isLoading ? '⏳ Загрузка...' : '🌐 С сервера' }}
             </button>
 
-            <button 
-                @click="addPassword"
-                :disabled="isLoading"
-                class="load-btn add-btn"
-            >
-                ➕ Добавить
-            </button>
 
             <div class="load-separator"></div>
 
@@ -325,12 +319,13 @@ const exportCurrentPasswords = () => {
     margin: 0 auto;
     padding: 20px;
     min-height: 100vh;
+    background: linear-gradient(135deg, #0F1419 0%, #1A1F2E 100%);
 }
 
 .back-btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(107, 163, 255, 0.15);
+    color: #6BA3FF;
+    border: 1px solid rgba(107, 163, 255, 0.3);
     padding: 10px 20px;
     border-radius: 6px;
     cursor: pointer;
@@ -341,24 +336,30 @@ const exportCurrentPasswords = () => {
 }
 
 .back-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(107, 163, 255, 0.25);
+    border-color: rgba(107, 163, 255, 0.5);
 }
 
 .header {
     margin-bottom: 25px;
     text-align: center;
-    color: white;
+    color: #F5F5F5;
 }
 
 .header h1 {
     font-size: 28px;
     margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #6BA3FF, #A78BFA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .subtitle {
     font-size: 14px;
     margin: 0;
-    opacity: 0.9;
+    opacity: 0.8;
+    color: #B0B0B0;
 }
 
 /* Панель загрузки */
@@ -367,14 +368,16 @@ const exportCurrentPasswords = () => {
     gap: 10px;
     margin-bottom: 25px;
     flex-wrap: wrap;
-    background: white;
+    background: rgba(42, 42, 52, 0.8);
     padding: 15px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(107, 163, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 .load-btn, .file-input-label {
-    background: #007AFF;
+    background: linear-gradient(135deg, #6BA3FF, #5A8FE8);
     color: white;
     border: none;
     padding: 10px 16px;
@@ -384,12 +387,14 @@ const exportCurrentPasswords = () => {
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(107, 163, 255, 0.3);
 }
 
 .load-btn:hover:not(:disabled),
 .file-input-label:hover {
-    background: #0051D5;
+    background: linear-gradient(135deg, #7EB3FF, #6BA3FF);
     transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(107, 163, 255, 0.4);
 }
 
 .load-btn:disabled,
@@ -399,11 +404,13 @@ const exportCurrentPasswords = () => {
 }
 
 .add-btn {
-    background: #34C759;
+    background: linear-gradient(135deg, #52C41A, #45AA0A);
+    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
 }
 
 .add-btn:hover:not(:disabled) {
-    background: #00BB2D;
+    background: linear-gradient(135deg, #6FD13C, #52C41A);
+    box-shadow: 0 6px 16px rgba(82, 196, 26, 0.4);
 }
 
 .file-input {
@@ -423,16 +430,23 @@ const exportCurrentPasswords = () => {
 .search-input {
     width: 100%;
     padding: 12px 16px;
-    border: 1px solid #ddd;
+    border: 1px solid rgba(107, 163, 255, 0.2);
     border-radius: 8px;
     font-size: 14px;
-    background: white;
+    background: rgba(42, 42, 52, 0.8);
+    color: #F5F5F5;
+    transition: all 0.2s;
+}
+
+.search-input::placeholder {
+    color: rgba(180, 180, 190, 0.6);
 }
 
 .search-input:focus {
     outline: none;
-    border-color: #007AFF;
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+    border-color: #6BA3FF;
+    background: rgba(42, 42, 52, 1);
+    box-shadow: 0 0 0 3px rgba(107, 163, 255, 0.15);
 }
 
 /* Список паролей */
@@ -444,15 +458,18 @@ const exportCurrentPasswords = () => {
 
 /* Элемент пароля */
 .password-item {
-    background: white;
+    background: rgba(42, 42, 52, 0.8);
     border-radius: 8px;
     padding: 16px;
-    border: 1px solid #e0e0e0;
-    transition: box-shadow 0.2s;
+    border: 1px solid rgba(107, 163, 255, 0.15);
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
 }
 
 .password-item:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(42, 42, 52, 1);
+    border-color: rgba(107, 163, 255, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 /* Заголовок элемента */
@@ -470,19 +487,19 @@ const exportCurrentPasswords = () => {
 .website-name {
     font-size: 18px;
     margin: 0 0 6px 0;
-    color: #333;
+    color: #F5F5F5;
     font-weight: 600;
 }
 
 .email {
     font-size: 13px;
-    color: #666;
+    color: #A0A0B0;
     margin: 0 0 4px 0;
 }
 
 .url {
     font-size: 12px;
-    color: #999;
+    color: #707080;
     margin: 0;
 }
 
@@ -490,7 +507,7 @@ const exportCurrentPasswords = () => {
 .delete-btn {
     background: none;
     border: none;
-    color: #999;
+    color: #707080;
     font-size: 20px;
     cursor: pointer;
     padding: 0;
@@ -503,7 +520,7 @@ const exportCurrentPasswords = () => {
 }
 
 .delete-btn:hover {
-    color: #ff3b30;
+    color: #FF6B6B;
 }
 
 /* Поле пароля */
@@ -511,17 +528,17 @@ const exportCurrentPasswords = () => {
     display: flex;
     gap: 8px;
     align-items: center;
-    background: #f9f9f9;
+    background: rgba(25, 25, 35, 0.8);
     padding: 10px 12px;
     border-radius: 6px;
-    border: 1px solid #f0f0f0;
+    border: 1px solid rgba(107, 163, 255, 0.1);
 }
 
 .password-display {
     flex: 1;
     font-family: 'Courier New', monospace;
     font-size: 14px;
-    color: #333;
+    color: #B0D4FF;
     user-select: none;
 }
 
@@ -536,37 +553,39 @@ const exportCurrentPasswords = () => {
 }
 
 .action-btn {
-    background: none;
-    border: 1px solid #ddd;
+    background: rgba(107, 163, 255, 0.1);
+    border: 1px solid rgba(107, 163, 255, 0.2);
     padding: 6px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
+    color: #6BA3FF;
     transition: all 0.2s;
     min-width: 40px;
 }
 
 .action-btn:hover {
-    background: white;
-    border-color: #007AFF;
-    color: #007AFF;
+    background: rgba(107, 163, 255, 0.2);
+    border-color: rgba(107, 163, 255, 0.4);
+    color: #7EB3FF;
 }
 
 .action-btn.copied {
-    background: #34C759;
-    color: white;
-    border-color: #34C759;
+    background: rgba(82, 196, 26, 0.2);
+    color: #52C41A;
+    border-color: rgba(82, 196, 26, 0.4);
 }
 
 /* Пустое состояние */
 .empty-state {
     text-align: center;
     padding: 40px 20px;
-    color: white;
+    color: #B0B0B0;
     font-size: 16px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(107, 163, 255, 0.08);
     border-radius: 8px;
-    margin-top: 20px
+    margin-top: 20px;
+    border: 1px solid rgba(107, 163, 255, 0.15);
 }
 
 </style>
