@@ -1,5 +1,5 @@
 <script setup>
-defineEmits(['navigate'])
+defineEmits(['navigate', 'info'])
 </script>
 
 <template>
@@ -27,10 +27,16 @@ defineEmits(['navigate'])
             <p>Магия одного касания — и пароль у тебя</p>
           </div>
         </div>
-
+          <div>
           <button @click="$emit('navigate')" class="start-btn">
             открыть менеджер →
           </button>
+
+          <button @click="$emit('info')" class="start-btn">
+            открыть about
+          </button>
+          </div>
+
 
       </div>
     </div>

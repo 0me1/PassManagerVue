@@ -2,13 +2,15 @@
 import { ref } from 'vue'
 import StartPage from './components/StartPage.vue'
 import PasswordManager from './components/PasswordManager.vue'
+import InfoPage from './components/InfoPage.vue'
 
 const currentPage = ref('start') // 'start' или 'manager'
 </script>
 
 <template>
   <div class="app">
-    <StartPage v-if="currentPage === 'start'" @navigate="currentPage = 'manager'" />
+    <StartPage v-if="currentPage === 'start'" @navigate="currentPage = 'manager'" @info="currentPage = 'info'" />
+    <InfoPage v-else-if="currentPage === 'info'" @back = "currentPage = 'start'" />
     <PasswordManager v-else @back="currentPage = 'start'" />
   </div>
 </template>
