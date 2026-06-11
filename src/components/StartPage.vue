@@ -1,5 +1,9 @@
 <script setup>
-defineEmits(['navigate', 'info'])
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 </script>
 
 <template>
@@ -28,11 +32,11 @@ defineEmits(['navigate', 'info'])
           </div>
         </div>
           <div>
-          <button @click="$emit('navigate')" class="start-btn">
+          <button @click="router.push('/manager')" class="start-btn">
             открыть менеджер →
           </button>
 
-          <button @click="$emit('info')" class="start-btn">
+          <button @click="router.push('/info')" class="start-btn">
             открыть about
           </button>
           </div>

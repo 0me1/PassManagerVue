@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
-defineEmits(['back'])
+const router = useRouter()
 
 const passwords = ref([
     {
@@ -181,7 +182,7 @@ const exportCurrentPasswords = () => {
 <template>
     <div class="password-manager">
         <!-- Кнопка назад -->
-        <button @click="$emit('back')" class="back-btn">← Назад</button>
+        <button @click="router.push('/')" class="back-btn">← Назад</button>
 
         <div class="header">
             <h1>🔐 Пароли</h1>
