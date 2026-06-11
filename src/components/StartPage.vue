@@ -6,83 +6,94 @@ defineEmits(['navigate'])
   <div class="start-page">
     <div class="container">
       <div class="content">
-        <h1 class="title">🔐 Менеджер Паролей</h1>
-        <p class="description">Безопасно сохраняйте и управляйте вашими паролями</p>
-        
-        <button @click="$emit('navigate')" class="start-btn">
-          Открыть менеджер
-        </button>
+        <h1 class="title">МЕНЕДЖЕР ПАРОЛЕЙ</h1>
+        <p class="description">«Пароли как котята — каждый сам по себе, но ты знаешь где они» (с) дипсик, 2026 г.<br>
+        Помнишь, как Фрирен хранила всё в своей сумке? Здесь то же самое, но для паролей.</p>
 
         <div class="features">
           <div class="feature">
-            <span class="icon">🔒</span>
-            <p>Безопасное хранение</p>
+            <span class="icon">🍂</span>
+            <h2 class="feature-title">Всё под рукой</h2>
+            <p>Быстрый поиск среди всех паролей</p>
           </div>
           <div class="feature">
-            <span class="icon">🔍</span>
-            <p>Быстрый поиск</p>
+            <span class="icon">🧣</span>
+            <h2 class="feature-title">С заботой</h2>
+            <p>Волнуемся о твоих данных, чтобы ты не волновался</p>
           </div>
           <div class="feature">
-            <span class="icon">📋</span>
-            <p>Копирование в один клик</p>
+            <span class="icon">🎀</span>
+            <h2 class="feature-title">Копирование</h2>
+            <p>Магия одного касания — и пароль у тебя</p>
           </div>
         </div>
+
+          <button @click="$emit('navigate')" class="start-btn">
+            открыть менеджер →
+          </button>
+
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+
+* {
+  font-family: 'comfortaa', comfortaa;
+}
+
 .start-page {
   display: flex;
-  align-items: center;
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
+  background-image: url('/1405985.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .container {
-  max-width: 500px;
+  max-width: 620px;
   width: 100%;
 }
 
 .content {
   text-align: center;
-  background: white;
   border-radius: 16px;
-  padding: 60px 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  padding: 60px 10px;
 }
 
 .title {
-  font-size: 36px;
+  font-size: 38px;
+  font-weight: 900;
+  color: #831830;
   margin: 0 0 16px 0;
-  color: #333;
-  font-weight: 700;
 }
 
 .description {
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 40px 0;
+  font-size: 17px;
+  color: #5b3a3a;
+  margin: 0 0 20px 0;
 }
 
 .start-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6173c5 0%, #745097 100%);
   color: white;
   border: none;
-  padding: 16px 48px;
+  padding: 15px 40px;
   font-size: 16px;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 50px;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 40px;
+  margin-top: 20px;
 }
 
 .start-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 25px rgba(21, 26, 52, 0.4);
 }
 
 .start-btn:active {
@@ -93,25 +104,31 @@ defineEmits(['navigate'])
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  margin-top: 30px;
+  margin-top: 20px;
+  margin-bottom: 7px;
 }
 
 .feature {
-  padding: 20px;
-  background: #f5f5f5;
   border-radius: 8px;
+}
+
+.feature-title {
+  font-size: 16px;
+  font-weight: 900;
+  margin: 5px 0 5px 0;
+  color: #831830;
 }
 
 .feature .icon {
   font-size: 28px;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .feature p {
   margin: 0;
   font-size: 13px;
-  color: #666;
+  color: #5b3a3a;
   font-weight: 500;
 }
 </style>
