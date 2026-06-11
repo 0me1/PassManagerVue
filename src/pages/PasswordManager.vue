@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import SearchBar from './components/SearchBar.vue'
+import PasswordCard from './components/PasswordCard.vue'
+
 
 const router = useRouter()
 
@@ -40,28 +43,8 @@ const filteredPasswords = computed(() => {
     )
 })
 
-const togglePasswordVisibility = (id) => {
-    visiblePasswords.value[id] = !visiblePasswords.value[id]
-}
-
-const copyToClipboard = async (password, id) => {
-    try {
-        await navigator.clipboard.writeText(password)
-        copiedId.value = id
-        setTimeout(() => {
-            copiedId.value = null
-        }, 2000)
-    } catch (error) {
-        console.error('Ошибка копирования:', error)
-    }
-}
-
 const deletePassword = (id) => {
     passwords.value = passwords.value.filter(item => item.id !== id)
-}
-
-const maskPassword = (password) => {
-    return '•'.repeat(password.length)
 }
 
 // 🔥 ЗАГРУЗКА ИЗ ПУБЛИЧНОГО ФАЙЛА
@@ -175,6 +158,58 @@ const exportCurrentPasswords = () => {
     }
     exportPasswords(filteredPasswords.value, `passwords_filtered_${new Date().toISOString().split('T')[0]}.json`)
 }
+// Состояние модального окна
+const showModal = ref(false)
+const formData = ref({
+    website: '',
+    email: '',
+    password: '',
+    url: ''
+})
+
+// Открытие модального окна
+const openAddPasswordModal = () => {
+    formData.value = { website: '', email: '', password: '', url: '' }
+    showModal.value = true
+}
+
+// Закрытие модального окна
+const closeModal = () => {
+    showModal.value = false
+    formData.value = { website: '', email: '', password: '', url: '' }
+}
+
+// Добавление пароля из формы
+const submitAddPassword = () => {
+    const { website, email, password, url } = formData.value
+    
+    // Валидация
+    if (!website.trim() || !email.trim() || !password.trim() || !url.trim()) {
+        alert('✗ Пожалуйста, заполните все поля')
+        return
+    }
+    
+    // Создание нового пароля
+    const newId = Math.max(...passwords.value.map(p => p.id), 0) + 1
+    passwords.value.push({
+        id: newId,
+        website: website.trim(),
+        email: email.trim(),
+        password: password.trim(),
+        url: url.trim()
+    })
+    
+    alert('✓ Пароль успешно добавлен!')
+    closeModal()
+}
+
+// Обработка Enter в форме
+const handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+        submitAddPassword()
+    }
+}
+
 
 
 </script>
@@ -185,13 +220,13 @@ const exportCurrentPasswords = () => {
         <button @click="router.push('/')" class="back-btn">← Назад</button>
         
         <div class="load-panel">
-            <button 
-                @click="addPassword"
-                :disabled="isLoading"
-                class="load-btn add-btn"
-            >
-                ➕ Добавить
-            </button>
+        <button 
+            @click="openAddPasswordModal"
+            :disabled="isLoading"
+            class="load-btn add-btn"
+        >
+            ➕ Добавить
+        </button>
 
             <button 
             @click="loadPasswordsFromFile" 
@@ -243,69 +278,87 @@ const exportCurrentPasswords = () => {
 
 
         <!-- Поиск -->
-        <div class="search-box">
-            <input 
-                v-model="searchQuery"
-                type="text" 
-                placeholder="Поиск по сайту или email..."
-                class="search-input"
-            >
-        </div>
+        <SearchBar v-model="searchQuery" />
 
         <!-- Список паролей -->
         <div v-if="filteredPasswords.length > 0" class="passwords-list">
-            <div 
-                v-for="item in filteredPasswords" 
+            <PasswordCard 
+                v-for="item in filteredPasswords"
                 :key="item.id"
-                class="password-item"
-            >
-                <div class="password-header">
-                    <div class="website-info">
-                        <h2 class="website-name">{{ item.website }}</h2>
-                        <p class="email">{{ item.email }}</p>
-                        <p class="url">{{ item.url }}</p>
-                    </div>
-                    <button 
-                        @click="deletePassword(item.id)"
-                        class="delete-btn"
-                        title="Удалить"
-                    >
-                        ✕
-                    </button>
-                </div>
-
-                <div class="password-field">
-                    <div class="password-display">
-                        <span class="password-text">
-                            {{ visiblePasswords[item.id] ? item.password : maskPassword(item.password) }}
-                        </span>
-                    </div>
-
-                    <div class="password-actions">
-                        <button 
-                            @click="togglePasswordVisibility(item.id)"
-                            class="action-btn"
-                            :title="visiblePasswords[item.id] ? 'Скрыть' : 'Показать'"
-                        >
-                            {{ visiblePasswords[item.id] ? '👁️' : '👁️‍🗨️' }}
-                        </button>
-
-                        <button 
-                            @click="copyToClipboard(item.password, item.id)"
-                            class="action-btn copy-btn"
-                            :class="{ copied: copiedId === item.id }"
-                        >
-                            {{ copiedId === item.id ? '✓ Скопировано' : '📋' }}
-                        </button>
-                    </div>
-                </div>
-            </div>
+                :item="item"
+                @delete="deletePassword"
+            />
         </div>
 
         <!-- Если ничего не найдено -->
         <div v-else class="empty-state">
             <p>🔍 Паролей не найдено</p>
         </div>
+
+        <div v-if="showModal" class="modal-overlay" @click="closeModal">
+    <div class="modal-content" @click.stop>
+        <div class="modal-header">
+            <h2>Добавить новый пароль</h2>
+            <button @click="closeModal" class="modal-close">✕</button>
+        </div>
+
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Название сайта *</label>
+                <input 
+                    v-model="formData.website"
+                    type="text" 
+                    placeholder="Например: Gmail"
+                    class="form-input"
+                    @keypress="handleKeyPress"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Email или логин *</label>
+                <input 
+                    v-model="formData.email"
+                    type="text" 
+                    placeholder="user@example.com"
+                    class="form-input"
+                    @keypress="handleKeyPress"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Пароль *</label>
+                <input 
+                    v-model="formData.password"
+                    type="password" 
+                    placeholder="Введите пароль"
+                    class="form-input"
+                    @keypress="handleKeyPress"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>URL сайта *</label>
+                <input 
+                    v-model="formData.url"
+                    type="text" 
+                    placeholder="example.com"
+                    class="form-input"
+                    @keypress="handleKeyPress"
+                >
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button @click="closeModal" class="modal-btn cancel-btn">
+                Отмена
+            </button>
+            <button @click="submitAddPassword" class="modal-btn submit-btn">
+                ✓ Добавить
+            </button>
+        </div>
+    </div>
+</div>
+
     </div>
 </template>
 
@@ -427,27 +480,6 @@ const exportCurrentPasswords = () => {
     margin-bottom: 25px;
 }
 
-.search-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid rgba(107, 163, 255, 0.2);
-    border-radius: 8px;
-    font-size: 14px;
-    background: rgba(42, 42, 52, 0.8);
-    color: #F5F5F5;
-    transition: all 0.2s;
-}
-
-.search-input::placeholder {
-    color: rgba(180, 180, 190, 0.6);
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #6BA3FF;
-    background: rgba(42, 42, 52, 1);
-    box-shadow: 0 0 0 3px rgba(107, 163, 255, 0.15);
-}
 
 /* Список паролей */
 .passwords-list {
@@ -455,127 +487,6 @@ const exportCurrentPasswords = () => {
     flex-direction: column;
     gap: 15px;
 }
-
-/* Элемент пароля */
-.password-item {
-    background: rgba(42, 42, 52, 0.8);
-    border-radius: 8px;
-    padding: 16px;
-    border: 1px solid rgba(107, 163, 255, 0.15);
-    transition: all 0.2s;
-    backdrop-filter: blur(10px);
-}
-
-.password-item:hover {
-    background: rgba(42, 42, 52, 1);
-    border-color: rgba(107, 163, 255, 0.3);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-/* Заголовок элемента */
-.password-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-}
-
-.website-info {
-    flex: 1;
-}
-
-.website-name {
-    font-size: 18px;
-    margin: 0 0 6px 0;
-    color: #F5F5F5;
-    font-weight: 600;
-}
-
-.email {
-    font-size: 13px;
-    color: #A0A0B0;
-    margin: 0 0 4px 0;
-}
-
-.url {
-    font-size: 12px;
-    color: #707080;
-    margin: 0;
-}
-
-/* Кнопка удаления */
-.delete-btn {
-    background: none;
-    border: none;
-    color: #707080;
-    font-size: 20px;
-    cursor: pointer;
-    padding: 0;
-    transition: color 0.2s;
-    min-width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.delete-btn:hover {
-    color: #FF6B6B;
-}
-
-/* Поле пароля */
-.password-field {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    background: rgba(25, 25, 35, 0.8);
-    padding: 10px 12px;
-    border-radius: 6px;
-    border: 1px solid rgba(107, 163, 255, 0.1);
-}
-
-.password-display {
-    flex: 1;
-    font-family: 'Courier New', monospace;
-    font-size: 14px;
-    color: #B0D4FF;
-    user-select: none;
-}
-
-.password-text {
-    letter-spacing: 2px;
-}
-
-/* Кнопки действий */
-.password-actions {
-    display: flex;
-    gap: 8px;
-}
-
-.action-btn {
-    background: rgba(107, 163, 255, 0.1);
-    border: 1px solid rgba(107, 163, 255, 0.2);
-    padding: 6px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #6BA3FF;
-    transition: all 0.2s;
-    min-width: 40px;
-}
-
-.action-btn:hover {
-    background: rgba(107, 163, 255, 0.2);
-    border-color: rgba(107, 163, 255, 0.4);
-    color: #7EB3FF;
-}
-
-.action-btn.copied {
-    background: rgba(82, 196, 26, 0.2);
-    color: #52C41A;
-    border-color: rgba(82, 196, 26, 0.4);
-}
-
 /* Пустое состояние */
 .empty-state {
     text-align: center;
@@ -587,5 +498,179 @@ const exportCurrentPasswords = () => {
     margin-top: 20px;
     border: 1px solid rgba(107, 163, 255, 0.15);
 }
+
+/* Модальное окно */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1A1F2E 0%, #0F1419 100%);
+    border-radius: 12px;
+    border: 1px solid rgba(107, 163, 255, 0.2);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 450px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(107, 163, 255, 0.15);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 18px;
+    color: #F5F5F5;
+    background: linear-gradient(135deg, #6BA3FF, #A78BFA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: #A0A0B0;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    color: #FF6B6B;
+    background: rgba(255, 107, 107, 0.1);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-group label {
+    font-size: 13px;
+    color: #B0B0B0;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.form-input {
+    padding: 10px 12px;
+    border: 1px solid rgba(107, 163, 255, 0.2);
+    border-radius: 6px;
+    background: rgba(25, 25, 35, 0.8);
+    color: #F5F5F5;
+    font-size: 14px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.form-input::placeholder {
+    color: rgba(180, 180, 190, 0.5);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #6BA3FF;
+    background: rgba(25, 25, 35, 1);
+    box-shadow: 0 0 0 3px rgba(107, 163, 255, 0.15);
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(107, 163, 255, 0.15);
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.cancel-btn {
+    background: rgba(107, 163, 255, 0.1);
+    color: #6BA3FF;
+    border: 1px solid rgba(107, 163, 255, 0.2);
+}
+
+.cancel-btn:hover {
+    background: rgba(107, 163, 255, 0.15);
+    border-color: rgba(107, 163, 255, 0.4);
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #52C41A, #45AA0A);
+    color: white;
+    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #6FD13C, #52C41A);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(82, 196, 26, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
 
 </style>

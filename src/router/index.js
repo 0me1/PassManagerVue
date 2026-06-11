@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import StartPage from '../components/StartPage.vue'
-import PasswordManager from '../components/PasswordManager.vue'
-import InfoPage from '../components/InfoPage.vue'
+import StartPage from '../pages/StartPage.vue'
+import PasswordManager from '../pages/PasswordManager.vue'
+import InfoPage from '../pages/InfoPage.vue'
 
 const routes = [
   {
